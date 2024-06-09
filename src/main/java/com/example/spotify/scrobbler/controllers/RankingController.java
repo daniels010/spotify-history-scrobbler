@@ -1,5 +1,9 @@
 package com.example.spotify.scrobbler.controllers;
 
+import com.example.spotify.scrobbler.data.Pair;
+import com.example.spotify.scrobbler.data.Triplet;
+import com.example.spotify.scrobbler.data.models.RankingData;
+import com.example.spotify.scrobbler.data.models.AlbumData;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.google.gson.JsonArray;
@@ -18,6 +22,8 @@ import java.util.Map;
 public class RankingController {
 
     private RankingData rankingData;
+
+    private AlbumData albumData;
 
     @PostMapping("/upload-json")
     public String uploadJson(@RequestParam("file") MultipartFile file) {
@@ -56,11 +62,18 @@ public class RankingController {
     }
 
     @GetMapping ("/album-ranking")
-    public List<Pair<String, Integer>> getAlbumRanking(){
+    public List<Pair<String, Integer>> getAlbumRanking1(){
         if(rankingData.getAlbumRanking() == null){
             throw new RuntimeException("O ranking ainda não foi processado");
         }
         return rankingData.getAlbumRanking();
+    }
+    @GetMapping ("/album-rankingnew")
+    public List<Triplet<String, String, Integer>> getAlbumRanking(){
+        if(albumData.getAlbumRanking() == null){
+            throw new RuntimeException("O ranking ainda não foi processado");
+        }
+        return albumData.getAlbumRanking();
     }
 
     @GetMapping ("/track-ranking")
@@ -94,6 +107,10 @@ public class RankingController {
                 rankingData = new RankingData();
             }
 
+            if(albumData == null){
+                albumData = new AlbumData();
+            }
+
             // Verifica se o json possui o objeto
             if (jsonElement.getAsJsonObject().has("master_metadata_album_artist_name")) {
                 // pega o nome correspondente
@@ -111,11 +128,23 @@ public class RankingController {
                     rankingData.incrementTrackCount(trackName);
                 }
             }
+
             if (jsonElement.getAsJsonObject().has("master_metadata_album_album_name")) {
                 JsonElement albumNameElement = jsonElement.getAsJsonObject().get("master_metadata_album_album_name");
                 if (!albumNameElement.isJsonNull()) {
                     String albumName = albumNameElement.getAsString();
                     rankingData.incrementAlbumCount(albumName);
+                }
+            }
+
+            //TODO: TESTANDO <<<<<<<<<<<<<<<<<<<<<<<
+            if (jsonElement.getAsJsonObject().has("master_metadata_album_album_name") && jsonElement.getAsJsonObject().has("master_metadata_album_artist_name")) {
+                JsonElement albumNameElement = jsonElement.getAsJsonObject().get("master_metadata_album_album_name");
+                JsonElement artistNameElement = jsonElement.getAsJsonObject().get("master_metadata_album_artist_name");
+                if (!albumNameElement.isJsonNull() && !artistNameElement.isJsonNull()) {
+                    String albumName = albumNameElement.getAsString();
+                    String artistName = artistNameElement.getAsString();
+                    albumData.incrementAlbumCount(albumName, artistName);
                 }
             }
         }

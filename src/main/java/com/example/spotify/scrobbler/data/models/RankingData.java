@@ -1,5 +1,7 @@
-package com.example.spotify.scrobbler.controllers;
+package com.example.spotify.scrobbler.data.models;
 
+import com.example.spotify.scrobbler.data.Pair;
+import com.example.spotify.scrobbler.data.Triplet;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -31,9 +33,7 @@ public class RankingData {
         return artistRanking;
     }
 
-    public List<Pair<String, Integer>> getTrackRanking() {
-        return trackRanking;
-    }
+    public List<Pair<String, Integer>> getTrackRanking() {return trackRanking;}
 
     public List<Pair<String, Integer>> getAlbumRanking() {
         return albumRanking;

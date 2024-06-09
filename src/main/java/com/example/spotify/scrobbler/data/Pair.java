@@ -1,4 +1,4 @@
-package com.example.spotify.scrobbler.controllers;
+package com.example.spotify.scrobbler.data;
 
 public class Pair<N, R> {
     private N name;
